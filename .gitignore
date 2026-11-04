@@ -1,0 +1,17 @@
+# Unity
+game/[Ll]ibrary/
+game/[Tt]emp/
+game/[Oo]bj/
+game/[Bb]uild/
+game/[Bb]uilds/
+game/[Ll]ogs/
+game/[Uu]ser[Ss]ettings/
+game/MemoryCaptures/
+game/*.csproj
+game/*.sln
+game/.vs/
+game/.idea/
+# Tooling outputs
+.sim-build/
+.compile-check/
+tools/.refs/
