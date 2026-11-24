@@ -2,6 +2,8 @@
 
 You are building **Hexhaven**, a complete, polished 3D hex-island trading/building strategy game in Unity 6 (URP), from the specification in `docs/`. The spec is deliberately exhaustive: **do not invent rules, simplify mechanics, or skip features**. If something is genuinely unspecified, choose the simplest option consistent with the rest of the spec, write it down in `docs/DECISIONS.md` (create it), and continue.
 
+**Starting on a new machine or resuming the build?** `NEXT-STEPS.md` is the step-by-step runbook: machine setup, then every milestone with commands and expected results. `docs/PROGRESS.md` (once it exists) records how far the build has got.
+
 ## 1. Read in this order (all of it, before writing code)
 1. `docs/00-OVERVIEW.md` — scope, glossary (use these exact terms), tech targets.
 2. `docs/01-RULES.md` — **the gameplay source of truth**.

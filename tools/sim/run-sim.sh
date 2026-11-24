@@ -7,13 +7,16 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 CORE_DIR="${CORE_DIR:-$ROOT/game/Assets/Hexhaven/Scripts/Core}"
 OUT="${SIM_OUT:-$ROOT/.sim-build}"
 mkdir -p "$OUT"
-mapfile -t SOURCES < <(find "$CORE_DIR" -name '*.cs' | sort)
+SOURCES=(); while IFS= read -r f; do SOURCES+=("$f"); done < <(find "$CORE_DIR" -name "*.cs" | sort)
 [ ${#SOURCES[@]} -gt 0 ] || { echo "No Core sources under $CORE_DIR"; exit 2; }
 
 if command -v mcs >/dev/null 2>&1; then
   mcs -langversion:7.2 -optimize+ -define:HEXHAVEN_TESTS -nowarn:1591 -out:"$OUT/Sim.exe" "$ROOT/tools/sim/Sim.cs" "${SOURCES[@]}"
   exec mono "$OUT/Sim.exe" "$@"
 elif command -v dotnet >/dev/null 2>&1; then
+  # On Git Bash / MSYS, dotnet needs Windows-style paths inside the project file.
+  P_ROOT="$ROOT"; P_CORE="$CORE_DIR"
+  if command -v cygpath >/dev/null 2>&1; then P_ROOT="$(cygpath -m "$ROOT")"; P_CORE="$(cygpath -m "$(cd "$CORE_DIR" && pwd)")"; fi
   cat > "$OUT/Sim.csproj" <<PROJ
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
@@ -22,8 +25,8 @@ elif command -v dotnet >/dev/null 2>&1; then
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems><Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$ROOT/tools/sim/Sim.cs" />
-    <Compile Include="$CORE_DIR/**/*.cs" />
+    <Compile Include="$P_ROOT/tools/sim/Sim.cs" />
+    <Compile Include="$P_CORE/**/*.cs" />
   </ItemGroup>
 </Project>
 PROJ

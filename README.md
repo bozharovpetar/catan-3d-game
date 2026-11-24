@@ -5,6 +5,7 @@ Hexhaven is an original 3D hex-island trading and building strategy game for 3â€
 | Path | What it is |
 |---|---|
 | `CLAUDE.md` / `AGENTS.md` | Agent entry point: reading order, rules, environment detection, commands, final report |
+| `NEXT-STEPS.md` | Runbook for setting up a machine and building the whole game, milestone by milestone |
 | `docs/00â€¦10` | The specification: overview, full rulebook, architecture, Core API, AI, visuals, UI, audio, persistence, testing, build order and Definition of Done |
 | `docs/11-CHARTERS.md` | Build guide for the development-card system (Charters) |
 | `docs/12-RULES-AUDIT.md` | Audit against the classic base-game rules, mechanic by mechanic |
