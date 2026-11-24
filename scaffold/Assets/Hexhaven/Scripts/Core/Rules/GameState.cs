@@ -19,6 +19,7 @@ namespace Hexhaven.Core
         public BoardMode BoardMode = BoardMode.BalancedRandom;
         public int VictoryTarget = 10;
         public bool FriendlyStorm;
+        public bool ClassicPhases;
         public List<PlayerConfig> Players = new List<PlayerConfig>();
 
         static readonly string[] DefaultNames = { "You", "Bryn", "Corra", "Dain" };
@@ -44,7 +45,7 @@ namespace Hexhaven.Core
 
         public GameConfig Clone()
         {
-            var c = new GameConfig { Seed = Seed, BoardMode = BoardMode, VictoryTarget = VictoryTarget, FriendlyStorm = FriendlyStorm };
+            var c = new GameConfig { Seed = Seed, BoardMode = BoardMode, VictoryTarget = VictoryTarget, FriendlyStorm = FriendlyStorm, ClassicPhases = ClassicPhases };
             foreach (var p in Players) c.Players.Add(p.Clone());
             return c;
         }
@@ -150,6 +151,8 @@ namespace Hexhaven.Core
         public bool CharterPlayedThisTurn;
         public int PlayedOtherCharters;
         public int RoadCrewRemaining;
+        public Phase RoadCrewReturnPhase = Phase.Main;
+        public bool TradingClosedThisTurn;
         public TradeOffer ActiveTrade;
         public int NextTradeId = 1;
 

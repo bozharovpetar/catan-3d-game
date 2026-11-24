@@ -6,7 +6,7 @@ Work strictly in this order. **Do not start a milestone until the previous gate 
 |---|---|---|---|
 | M0 | Project & scaffolding | `game/` Unity 6 URP project (02 §2), packages, asmdefs (02 §3.1), copy `scaffold/Assets/Hexhaven` into `game/Assets/Hexhaven`, `ProjectSetup.cs` (scaffold: Setup Project, Play Main Scene, Open Test Runner) + `HexhavenMenu.cs` (Capture Screenshots, Replay Save…, Debug ▸ Spawn Demo Pieces) | Editor opens without compile errors (`unity status` ready / console clean); `Hexhaven ▸ Setup Project` creates `Main.unity`; `tools/compile-check.sh` passes |
 | M1 | Core primitives & board | `Pcg32`, `ResourceBag`, enums, `HexMath`, `Board.CreateGeometry`, `BoardGenerator`, `BeginnerLayout` | T101–T108 pass (or the equivalent sim-harness `--selftest board`) |
-| M2 | Rules engine | Full `GameEngine` per 03 (all actions, phases, events, errors, awards, victory), `GameInvariants`, `StateHasher`, `Debug_*` helpers | T201–T901 and T904–T907 pass; T902/T903 run with the random-legal driver (bot-driven versions move to M3); `tools/sim/run-sim.sh --random-legal 2000` shows 0 invariant violations, 0 exceptions, replay and save round-trips match |
+| M2 | Rules engine | Full `GameEngine` per 03 (all actions, phases, events, errors, awards, victory), `GameInvariants`, `StateHasher`, `Debug_*` helpers | T201–T901 (including T612–T624 from `11-CHARTERS.md` §7 and T709–T712) and T904–T907 pass; the 11-CHARTERS §8 acceptance checklist holds; T902/T903 run with the random-legal driver (bot-driven versions move to M3); `tools/sim/run-sim.sh --random-legal 2000` shows 0 invariant violations, 0 exceptions, replay and save round-trips match |
 | M3 | AI | `BotBrain`, `BotEvaluator`, `CardTracker`, `BotParams`, `BotTrade` per 04 | T902/T903 (bot-driven), T1001–T1003; `tools/sim/run-sim.sh 10000` exits 0 (all 04 §6 gates). Run it in the background (`nohup tools/sim/run-sim.sh 10000 > sim.log 2>&1 &`), expect 5–40 min; iterate with 1,000-game runs first |
 | M4 | Persistence | `SaveCodec`, `GameAction` codec, `SaveStore`, `SettingsStore` | T903–T905 pass; sim save round-trips pass |
 | M5 | 3D board | `MaterialLibrary`, `Palette`, `MeshFactory`, `TextureFactory`, `BoardView` (island, tiles, decorations, tokens, harbors), `OceanView`, `AmbientView`, `CameraRig`, lighting, post FX | In Play mode the title preview island renders (screenshot reviewed per 09 §5 items 1–3, 9); no pink materials; ≥ 60 fps |
@@ -20,7 +20,7 @@ Work strictly in this order. **Do not start a milestone until the previous gate 
 
 ## Definition of Done (all true)
 
-1. Every rule R-1 … R-14 implemented; T-tests for each pass.
+1. Every rule R-1 … R-14 implemented; T-tests for each pass; every row of `12-RULES-AUDIT.md` §2 is satisfied; all user-facing text matches `13-STRINGS.md`.
 2. `tools/sim/run-sim.sh 10000` exits 0: 0 illegal actions, 0 invariant violations, replay/save hashes match, AI quality gates met.
 3. `tools/compile-check.sh` passes; Unity console has 0 errors and 0 warnings from `Hexhaven.*` assemblies.
 4. EditMode and PlayMode test suites green (JUnit reports saved as `game/TestResults/editmode.xml` and `game/TestResults/playmode.xml`).

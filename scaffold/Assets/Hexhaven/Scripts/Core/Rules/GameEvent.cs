@@ -58,7 +58,8 @@ namespace Hexhaven.Core
             InvalidDiscard = "InvalidDiscard", DeckEmpty = "DeckEmpty", CharterAlreadyPlayed = "CharterAlreadyPlayed",
             NoPlayableCharter = "NoPlayableCharter", NoLegalPlacement = "NoLegalPlacement", BankEmpty = "BankEmpty",
             InvalidBounty = "InvalidBounty", InvalidTrade = "InvalidTrade", TradePending = "TradePending",
-            NoSuchTrade = "NoSuchTrade", PartnerNotReady = "PartnerNotReady", PartnerCannotPay = "PartnerCannotPay";
+            NoSuchTrade = "NoSuchTrade", PartnerNotReady = "PartnerNotReady", PartnerCannotPay = "PartnerCannotPay",
+            TradingClosed = "TradingClosed";
     }
 
     public sealed class ApplyResult

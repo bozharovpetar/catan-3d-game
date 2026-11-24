@@ -199,6 +199,7 @@ public sealed class GameConfig
     public BoardMode BoardMode = BoardMode.BalancedRandom;
     public int VictoryTarget = 10;                            // 8..15
     public bool FriendlyStorm = false;
+    public bool ClassicPhases = false;                        // R-4.7
     public List<PlayerConfig> Players = new List<PlayerConfig>();   // 3 or 4; seat = index
     /// seat 0 human named "You", others bots "Bryn","Corra","Dain" (Normal)
     public static GameConfig Default(int seed, int playerCount = 4);
@@ -281,6 +282,8 @@ public sealed class GameState
     public bool CharterPlayedThisTurn;
     public int PlayedOtherCharters;                  // Road Crew + Bounty + Decree played (for invariant 2)
     public int RoadCrewRemaining;                    // free paths left in RoadCrew phase
+    public Phase RoadCrewReturnPhase = Phase.Main;   // TurnStart when Road Crew was played before the roll
+    public bool TradingClosedThisTurn;               // R-4.7 (only ever true when Config.ClassicPhases)
     public TradeOffer ActiveTrade;                   // null when none
     public int NextTradeId = 1;
 
@@ -302,12 +305,12 @@ public sealed class GameState
 | RollForOrder | `[RollOffQueue[0]]` | `RollForOrder` | After the queue empties: unique max → `StartPlayer`, build `SetupOrder`, `Current = SetupOrder[0]`, → SetupOutpost. Tie → queue = tied seats ascending, reset their `RollOffTotal`, emit `RollOffTie`. |
 | SetupOutpost | `[Current]` | `PlaceSetupOutpost` | → SetupPath (`LastSetupOutpost = v`). Round-2 outposts grant starting resources (R-3.7). |
 | SetupPath | `[Current]` | `PlaceSetupPath` | `SetupIndex++`; if `< 2N` → `Current = SetupOrder[SetupIndex]`, SetupOutpost; else `TurnNumber = 1`, `Current = StartPlayer`, → TurnStart. |
-| TurnStart | `[Current]` | `RollDice`, `PlayWarden` | **Beginning a new turn** (only via EndTurn → next seat, or after the final setup Path — never when MoveStorm/ChooseVictim returns to TurnStart after a pre-roll Warden): reset `CharterPlayedThisTurn = false`, reset bot per-turn counters, emit `TurnStarted`, **victory check** (R-12.3). RollDice: 7 → set `PendingDiscard`; any > 0 → Discard else MoveStorm; `StormReturnPhase = Main`. Non-7 → produce → Main. PlayWarden → `StormReturnPhase = TurnStart`, → MoveStorm. |
+| TurnStart | `[Current]` | `RollDice`, `PlayWarden`, `PlayRoadCrew`, `PlayBounty`, `PlayDecree` (R-4.2) | **Beginning a new turn** (only via EndTurn → next seat, or after the final setup Path — never when MoveStorm/ChooseVictim returns to TurnStart after a pre-roll Warden): reset `CharterPlayedThisTurn = false` and `TradingClosedThisTurn = false`, reset bot per-turn counters, emit `TurnStarted`, **victory check** (R-12.3). RollDice: 7 → set `PendingDiscard`; any > 0 → Discard else MoveStorm; `StormReturnPhase = Main`. Non-7 → produce → Main. PlayWarden → `StormReturnPhase = TurnStart`, → MoveStorm. PlayRoadCrew → `RoadCrewReturnPhase = TurnStart`, → RoadCrew. PlayBounty / PlayDecree resolve immediately and stay in TurnStart. |
 | Discard | seats with `PendingDiscard > 0`, ordered starting at `Current` going clockwise | `Discard` | When all zero → MoveStorm. |
 | MoveStorm | `[Current]` | `MoveStorm` | Candidates (R-7.4): 0 → emit `NoPlunder`, → `StormReturnPhase`; 1 → auto plunder, → `StormReturnPhase`; ≥2 → ChooseVictim. |
 | ChooseVictim | `[Current]` | `ChooseVictim` | Plunder → `StormReturnPhase`. |
-| Main | if `ActiveTrade != null`: targets with `Pending` (clockwise from Current+1), then `Current`; else `[Current]` | all Main actions (§6); with an open trade the proposer may only `ConfirmTrade` / `CancelTrade` / `EndTurn` (auto-cancels), targets only `RespondTrade` | `EndTurn` → `TurnNumber++`, `Current = next`, → TurnStart. `PlayRoadCrew` → RoadCrew. `PlayWarden` → `StormReturnPhase = Main`, MoveStorm. |
-| RoadCrew | `[Current]` | `PlaceFreePath` | After each placement `RoadCrewRemaining--`; when 0, or no Path in supply, or no legal edge → set `RoadCrewRemaining = 0`, → Main. On victory during RoadCrew also set it to 0. (If no legal edge exists at play time, `PlayRoadCrew` is illegal.) |
+| Main | if `ActiveTrade != null`: targets with `Pending` (clockwise from Current+1), then `Current`; else `[Current]` | all Main actions (§6); with an open trade the proposer may only `ConfirmTrade` / `CancelTrade` / `EndTurn` (auto-cancels), targets only `RespondTrade` | `EndTurn` → `TurnNumber++`, `Current = next`, → TurnStart. `PlayRoadCrew` → `RoadCrewReturnPhase = Main`, RoadCrew. `PlayWarden` → `StormReturnPhase = Main`, MoveStorm. |
+| RoadCrew | `[Current]` | `PlaceFreePath` | After each placement `RoadCrewRemaining--`; when 0, or no Path in supply, or no legal edge → set `RoadCrewRemaining = 0`, → `RoadCrewReturnPhase`. On victory during RoadCrew also set it to 0. (If no legal edge exists at play time, `PlayRoadCrew` is illegal.) |
 | GameOver | `[]` | none | terminal |
 
 Victory check (R-12.2) runs after **every** successful action whose actor is `Current` (and when a new turn begins). When it triggers: `Winner = Current`, emit `MonumentsRevealed` then `GameWon`, `Phase = GameOver`.
@@ -380,16 +383,18 @@ Common checks for every action: `GameOver` → `Errors.GameOver`; `Player` not i
 | BuildKeep | own Outpost there (`NotYourOutpost`); `KeepsLeft > 0` (`NoPiecesLeft`); afford | pay; Keep; `KeepsLeft--`, `OutpostsLeft++`; `Built{Piece=Keep}`; victory check. |
 | BuyCharter | deck non-empty (`DeckEmpty`); afford | pay; pop top; add `CharterCard{BoughtOnTurn=TurnNumber}`; `ChartersBought++`; `CharterBought{Charter}` visible to buyer only (others see count); victory check (Monument). |
 | PlayWarden | phase TurnStart or Main; `!CharterPlayedThisTurn` (`CharterAlreadyPlayed`); has a Warden with `BoughtOnTurn < TurnNumber` (`NoPlayableCharter`) | remove oldest eligible Warden; `WardensPlayed++`; `CharterPlayedThisTurn = true`; `CharterPlayed`; recompute Strongest Guard (`AwardChanged`); `StormReturnPhase = phase`; → MoveStorm; victory check. |
-| PlayRoadCrew | Main; once-per-turn; playable card; `PathsLeft > 0` and ≥ 1 legal free edge (`NoLegalPlacement`) | remove card; flag; `CharterPlayed`; `RoadCrewRemaining = min(2, PathsLeft)`; `RoadCrewStarted`; → RoadCrew. |
-| PlaceFreePath | phase RoadCrew; edge legal per R-6.5 (`NotConnected`/`Occupied`) | place free; `Built{Free=true}`; awards; victory check; decrement; maybe → Main. |
-| PlayBounty | Main; once-per-turn; playable; bank total > 0 (`BankEmpty`); `Get.Total == min(2, Bank.Total)` and `Bank.Contains(Get)` and no negatives (`InvalidBounty`) | remove card; flag; `CharterPlayed`; bank → hand; `BountyTaken{Bag}`; victory check (no VP change, harmless). |
-| PlayDecree | Main; once-per-turn; playable | remove card; flag; `CharterPlayed`; take all of `Resource` from every opponent → `DecreeResolved{Amounts[seat], Value=total}`. |
-| MaritimeTrade | Main; `Resource != Resource2` (`InvalidTrade`); `Hand[give] >= rate` (`CannotAfford`); `Bank[get] >= 1` (`BankEmpty`) | hand −rate give, +1 get; bank inverse; `MaritimeTraded{Bag=gave,Bag2=got}`. |
-| ProposeTrade | Main; no open trade (`TradePending`); `Give`, `Get` non-empty, non-negative, not sharing a resource (`InvalidTrade`); `TargetMask` ⊆ opponents and ≠ 0 (`InvalidTrade`); `Hand.Contains(Give)` (`CannotAfford`) | create offer (Id = NextTradeId++), responses Pending for targets, Declined otherwise; `TradeProposed`. |
+| PlayRoadCrew | TurnStart or Main; once-per-turn; playable card; `PathsLeft > 0` and ≥ 1 legal free edge (`NoLegalPlacement`) | remove card; flag; `CharterPlayed`; `RoadCrewRemaining = min(2, PathsLeft)`; `RoadCrewStarted`; `RoadCrewReturnPhase = phase`; → RoadCrew. |
+| PlaceFreePath | phase RoadCrew; edge legal per R-6.5 (`NotConnected`/`Occupied`) | place free; `Built{Free=true}`; awards; victory check; decrement; maybe → `RoadCrewReturnPhase`. |
+| PlayBounty | TurnStart or Main; once-per-turn; playable; bank total > 0 (`BankEmpty`); `Get.Total == min(2, Bank.Total)` and `Bank.Contains(Get)` and no negatives (`InvalidBounty`) | remove card; flag; `CharterPlayed`; bank → hand; `BountyTaken{Bag}`; victory check (no VP change, harmless). |
+| PlayDecree | TurnStart or Main; once-per-turn; playable | remove card; flag; `CharterPlayed`; take all of `Resource` from every opponent → `DecreeResolved{Amounts[seat], Value=total}`. |
+| MaritimeTrade | Main; not `TradingClosedThisTurn` (`TradingClosed`); `Resource != Resource2` (`InvalidTrade`); `Hand[give] >= rate` (`CannotAfford`); `Bank[get] >= 1` (`BankEmpty`) | hand −rate give, +1 get; bank inverse; `MaritimeTraded{Bag=gave,Bag2=got}`. |
+| ProposeTrade | Main; not `TradingClosedThisTurn` (`TradingClosed`); no open trade (`TradePending`); `Give`, `Get` non-empty, non-negative, not sharing a resource (`InvalidTrade`); `TargetMask` ⊆ opponents and ≠ 0 (`InvalidTrade`); `Hand.Contains(Give)` (`CannotAfford`) | create offer (Id = NextTradeId++), responses Pending for targets, Declined otherwise; `TradeProposed`. |
 | RespondTrade | open trade with that id (`NoSuchTrade`); responder is a Pending target (`NotYourTurn`); Accept requires responder hand ⊇ offer.Get (`CannotAfford`); Counter requires valid terms per R-9.2 (`InvalidTrade`) and responder hand ⊇ counterGet (`CannotAfford`) | set response (store counter terms); `TradeResponded`. |
 | ConfirmTrade | proposer only; trade id (`NoSuchTrade`); partner Accepted or Countered (`PartnerNotReady`); terms = original or counter; proposer hand ⊇ terms.Give (`CannotAfford`); partner hand ⊇ terms.Get (`PartnerCannotPay`) — both checked in `Validate`, failures change nothing (unreachable in normal play because hands cannot change while an offer is open; kept as a safety check) | exchange; stats; `TradeCompleted`; `ActiveTrade = null`. |
 | CancelTrade | proposer; trade id | `TradeCancelled`; `ActiveTrade = null`. |
 | EndTurn | Main; if `ActiveTrade != null` it is auto-cancelled first (emit `TradeCancelled`) | `TurnEnded`; `TurnNumber++`; `Current = (Current+1) % N`; enter TurnStart (emits `TurnStarted`, victory check). |
+
+**Classic phases (R-4.7):** when `Config.ClassicPhases` is true, every successful `BuildPath`, `BuildOutpost`, `BuildKeep` and `BuyCharter` sets `TradingClosedThisTurn = true` (free Paths and Charter plays do not). `ConfirmTrade`/`RespondTrade` need no extra check because an offer cannot be open while the proposer builds.
 
 ```csharp
 public static class Errors
@@ -401,7 +406,8 @@ public static class Errors
         InvalidDiscard = "InvalidDiscard", DeckEmpty = "DeckEmpty", CharterAlreadyPlayed = "CharterAlreadyPlayed",
         NoPlayableCharter = "NoPlayableCharter", NoLegalPlacement = "NoLegalPlacement", BankEmpty = "BankEmpty",
         InvalidBounty = "InvalidBounty", InvalidTrade = "InvalidTrade", TradePending = "TradePending",
-        NoSuchTrade = "NoSuchTrade", PartnerNotReady = "PartnerNotReady", PartnerCannotPay = "PartnerCannotPay";
+        NoSuchTrade = "NoSuchTrade", PartnerNotReady = "PartnerNotReady", PartnerCannotPay = "PartnerCannotPay",
+        TradingClosed = "TradingClosed";
 }
 
 public sealed class ApplyResult
@@ -558,7 +564,7 @@ FNV-1a 64-bit (offset 14695981039346656037, prime 1099511628211) over the UTF-8 
 
 ```
 phase=<Phase> current=<int> turn=<int> storm=<int> dice=<d1>,<d2> lp=<int> sg=<int> winner=<int> start=<int>
-flow=<StormReturnPhase>,<CharterPlayedThisTurn 0|1>,<RoadCrewRemaining>,<SetupIndex>,<LastSetupOutpost>,<NextTradeId>,<PlayedOtherCharters> rolloff=<RollOffQueue seats separated by ';'>
+flow=<StormReturnPhase>,<CharterPlayedThisTurn 0|1>,<RoadCrewRemaining>,<SetupIndex>,<LastSetupOutpost>,<NextTradeId>,<PlayedOtherCharters>,<RoadCrewReturnPhase>,<TradingClosedThisTurn 0|1> rolloff=<RollOffQueue seats separated by ';'>
 bank=<codec>
 deck=<comma-separated CharterType ints, bottom→top>
 rng=<State>,<Inc>
@@ -577,7 +583,7 @@ trade=<id,proposer,give,get,mask,responses...> or trade=none
 4. Distance rule holds for every building.
 5. Every owned edge shares a vertex with an own building or another own edge, unless that vertex holds an opponent building (opponents may legally cut a network, so global connectivity is *not* an invariant; connection is verified at placement time by tests).
 6. `PathLength[s] == ComputePathLength(s)` for all seats. Longest Path: if holder ≥ 0 then `PathLength[holder] >= 5` and `PathLength[holder] >= PathLength[s]` for all s; if holder == −1 then there is no *unique* seat with the maximum length ≥ 5. Strongest Guard: if holder ≥ 0 then `WardensPlayed[holder] >= 3` and ≥ everyone else's; if −1 then nobody has ≥ 3.
-7. `Phase` consistency: `PendingDiscard > 0` only in Discard; `ActiveTrade` only in Main; `RoadCrewRemaining > 0` only in RoadCrew; `Winner >= 0` iff GameOver.
+7. `Phase` consistency: `PendingDiscard > 0` only in Discard; `ActiveTrade` only in Main; `RoadCrewRemaining > 0` only in RoadCrew; `TradingClosedThisTurn` only when `Config.ClassicPhases` and Phase is Main/MoveStorm/ChooseVictim/RoadCrew of the current turn; `Winner >= 0` iff GameOver.
 8. `VictoryPoints(seat, true) < target` for every non-winner during their own turn after each action (otherwise victory check failed).
 9. `StormTile` in range; Storm tile ≠ previous when a `StormMoved` occurred (checked in tests).
 10. In phases MoveStorm and ChooseVictim every `PendingDiscard == 0` (a hand may legitimately still exceed 7 after discarding half).

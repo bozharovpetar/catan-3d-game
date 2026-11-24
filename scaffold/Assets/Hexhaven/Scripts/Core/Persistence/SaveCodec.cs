@@ -29,7 +29,7 @@ namespace Hexhaven.Core
             for (int i = 0; i < state.PlayerCount; i++) { if (i > 0) sb.Append(','); sb.Append(PublicVp(state, i).ToString(ci)); }
             sb.Append('\n');
             sb.Append("config seed=").Append(c.Seed.ToString(ci)).Append(" board=").Append(c.BoardMode)
-              .Append(" target=").Append(c.VictoryTarget.ToString(ci)).Append(" friendly=").Append(c.FriendlyStorm ? "1" : "0").Append('\n');
+              .Append(" target=").Append(c.VictoryTarget.ToString(ci)).Append(" friendly=").Append(c.FriendlyStorm ? "1" : "0").Append(" classic=").Append(c.ClassicPhases ? "1" : "0").Append('\n');
             for (int i = 0; i < c.Players.Count; i++)
             {
                 var p = c.Players[i];
@@ -75,6 +75,7 @@ namespace Hexhaven.Core
                         config.BoardMode = (BoardMode)Enum.Parse(typeof(BoardMode), Get(kv, "board", "BalancedRandom"));
                         config.VictoryTarget = int.Parse(Get(kv, "target", "10"), CultureInfo.InvariantCulture);
                         config.FriendlyStorm = Get(kv, "friendly", "0") == "1";
+                        config.ClassicPhases = Get(kv, "classic", "0") == "1";
                     }
                     else if (line.StartsWith("player "))
                     {

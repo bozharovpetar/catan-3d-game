@@ -10,6 +10,9 @@ You are building **Hexhaven**, a complete, polished 3D hex-island trading/buildi
 5. `docs/04-AI.md`, `docs/05-VISUALS.md`, `docs/06-UI.md`, `docs/07-AUDIO.md`, `docs/08-PERSISTENCE.md`.
 6. `docs/09-TESTING.md` — the test catalogue and verification layers.
 7. `docs/10-BUILD-ORDER.md` — milestones, gates, Definition of Done. **Follow it in order.**
+8. `docs/11-CHARTERS.md` — step-by-step build guide for the Charter (development card) system; implement it in M2 alongside the engine.
+9. `docs/12-RULES-AUDIT.md` — the completeness checklist against the classic genre rules (classic terms may appear only in the cross-reference tables of docs 11 and 12, never under `game/`).
+10. `docs/13-STRINGS.md` — every user-facing string, verbatim.
 
 ## 2. Non-negotiable rules
 1. **Originality.** Never use the name, terminology, card names, art or trade dress of any existing commercial board game. Use only the glossary terms (Outpost, Keep, Path, Storm, Charter, Warden, Monument, Road Crew, Bounty, Decree, Longest Path, Strongest Guard, Timber/Clay/Fiber/Grain/Iron …). Gate: `grep -rniwE "catan|settlers?|robber|knights?|lumber|wool|ore|brick|sheep|monopoly|year of plenty|road building|largest army|longest road|development cards?" game/Assets/Hexhaven` must print nothing.

@@ -82,7 +82,7 @@ EditMode tests reference only `Hexhaven.Core`, so the same test logic can also b
 | T601 | Deck has 25 cards with exact type counts; buy pops the top (last) card; `DeckEmpty` after 25 |
 | T602 | Cannot play a charter bought this turn (`NoPlayableCharter`); can play an older copy of same type |
 | T603 | One charter per turn (`CharterAlreadyPlayed`), Monuments excluded and never playable |
-| T604 | Warden before roll → MoveStorm → back to TurnStart, must still roll |
+| T604 | Warden before roll → MoveStorm → back to TurnStart, must still roll; Road Crew / Bounty / Decree are equally playable before the roll (R-4.2) |
 | T605 | Warden in Main → back to Main; WardensPlayed++ |
 | T606 | Strongest Guard at 3 Wardens; transfer only when exceeded; AwardChanged events |
 | T607 | Road Crew: places 2 free paths; with 1 path piece places 1; illegal when no legal edge (`NoLegalPlacement`); no other actions during RoadCrew |
@@ -90,6 +90,7 @@ EditMode tests reference only `Hexhaven.Core`, so the same test logic can also b
 | T609 | Decree: collects all of named resource from every opponent; amounts per seat in event |
 | T610 | Monument counts toward VP immediately (hidden: public VP excludes it) and can win on purchase turn |
 | T611 | Charter purchase event private (RedactFor hides type) |
+| T612–T624 | Charter timing, flag lifecycle, Road Crew return phase, deck determinism, Strongest Guard sequence, redaction — full list in `11-CHARTERS.md` §7 |
 
 ### Trade (R-9, R-10)
 | Id | Asserts |
@@ -102,6 +103,10 @@ EditMode tests reference only `Hexhaven.Core`, so the same test logic can also b
 | T706 | Cancel closes; EndTurn auto-cancels an open offer |
 | T707 | Maritime rates 4/3/2 by harbor ownership (outpost or keep on harbor corner); bank stock check (`BankEmpty`); same resource (`InvalidTrade`) |
 | T708 | Non-current players cannot propose (`NotYourTurn`) |
+| T709 | Classic phases on: MaritimeTrade and ProposeTrade succeed before the first purchase and fail with `TradingClosed` after BuildPath / BuildOutpost / BuildKeep / BuyCharter |
+| T710 | Classic phases on: playing a Charter and placing free Road Crew Paths do not close trading; the flag resets on the next turn |
+| T711 | Classic phases off (default): trading after building succeeds; `TradingClosedThisTurn` is never true |
+| T712 | Harbor rate applies in the same turn the Outpost on the harbor corner is built (R-10.4) |
 
 ### Awards & victory (R-11, R-12)
 | Id | Asserts |

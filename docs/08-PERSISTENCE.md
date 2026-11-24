@@ -8,7 +8,7 @@ A save = **config + action log + state hash**. Loading replays the log through `
 ```
 HEXHAVEN-SAVE 1
 meta savedAtUtc=2026-11-04T19:12:00Z round=7 label=Round%207 vp=6,5,4,3
-config seed=48213 board=BalancedRandom target=10 friendly=0
+config seed=48213 board=BalancedRandom target=10 friendly=0 classic=0
 player seat=0 name=You bot=0 diff=Normal
 player seat=1 name=Bryn bot=1 diff=Normal
 player seat=2 name=Corra bot=1 diff=Hard

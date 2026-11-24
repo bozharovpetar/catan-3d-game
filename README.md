@@ -6,6 +6,9 @@ Hexhaven is an original 3D hex-island trading and building strategy game for 3â€
 |---|---|
 | `CLAUDE.md` / `AGENTS.md` | Agent entry point: reading order, rules, environment detection, commands, final report |
 | `docs/00â€¦10` | The specification: overview, full rulebook, architecture, Core API, AI, visuals, UI, audio, persistence, testing, build order and Definition of Done |
+| `docs/11-CHARTERS.md` | Build guide for the development-card system (Charters) |
+| `docs/12-RULES-AUDIT.md` | Audit against the classic base-game rules, mechanic by mechanic |
+| `docs/13-STRINGS.md` | Every user-facing string |
 | `scaffold/` | Verified starting code: complete data model, board generator, RNG, codecs, hashing, input shim, mesh factory, project setup, asmdefs, plus engine and AI signatures to implement |
 | `tools/sim/` | Headless simulation harness, the executable spec, run with `tools/sim/run-sim.sh` |
 | `tools/compile-check.sh` | Type-checks all Unity code without Unity (Mono plus reference DLLs fetched from NuGet) |
