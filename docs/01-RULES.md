@@ -88,12 +88,13 @@ Side index `s` of a tile: side `s` lies between corner `s` and corner `s+1` (mod
 
 | Id | Rule |
 |---|---|
-| R-4.1 | A turn is: **TurnStart** → (optional: play one Warden) → **Roll** → resolve production or 7 → **Main** (trade, build, buy, play one Charter, any order, any number of times except where limited) → **End turn**. |
-| R-4.2 | At TurnStart the player may play a Warden (R-8.5) before rolling, subject to the one-Charter-per-turn limit. After the Warden is resolved they still must roll. |
-| R-4.3 | The player must roll before doing anything else except playing a Warden. |
+| R-4.1 | A turn is: **TurnStart** → (optional: play one Charter) → **Roll** → resolve production or 7 → **Main** (trade, build, buy, play one Charter if none was played yet this turn, any order, any number of times except where limited) → **End turn**. |
+| R-4.2 | At TurnStart the player may play **one Charter of any playable type** (Warden, Road Crew, Bounty or Decree) before rolling, subject to the one-Charter-per-turn limit (R-8.3). After it is fully resolved they still must roll. |
+| R-4.3 | The player must roll before doing anything else except playing a Charter. Trading, building and buying are never allowed before the roll. |
 | R-4.4 | In Main the player may, in any order and repeatedly: domestic trade (R-9), maritime trade (R-10), build (R-6), buy Charters (R-8.2), play at most one non-Monument Charter for the whole turn (R-8.3). |
 | R-4.5 | The player ends the turn explicitly. There is no turn timer. |
 | R-4.6 | Victory is checked per R-12. |
+| R-4.7 | **Classic phases (option, default off):** the Main phase is played as *trade first, then build*. Domestic and maritime trades are allowed only until the player's first purchase of the turn (BuildPath, BuildOutpost, BuildKeep or BuyCharter); after that, trading is closed for the rest of the turn (`TradingClosed`). Playing a Charter never closes trading, and free Paths from a Road Crew do not count as a purchase. With the option off (default), trading and building may be freely mixed. |
 
 ## R-5 Production
 
@@ -114,7 +115,7 @@ Side index `s` of a tile: side `s` lies between corner `s` and corner `s+1` (mod
 | R-6.4 | **Outpost connection (normal play):** the corner must be an endpoint of at least one of your own Paths. |
 | R-6.5 | **Path placement (normal play):** the edge must be empty and at least one endpoint corner must be either (a) occupied by your own Outpost/Keep, or (b) unoccupied by any building and an endpoint of another of your Paths. You may not extend a Path *through* a corner occupied by an opponent's building. |
 | R-6.6 | **Keep:** replaces one of your Outposts (same corner). Returns the Outpost to your supply, uses one Keep from supply. |
-| R-6.7 | Building is only allowed in Main (and setup per R-3, and free Paths per R-8.7). |
+| R-6.7 | Building is only allowed in Main (and setup per R-3, and free Paths per R-8.7, which may happen before the roll). |
 | R-6.8 | Paths may be built on coastal edges and harbor edges normally. |
 
 ## R-7 Rolling a 7 — the Storm
@@ -135,15 +136,17 @@ Side index `s` of a tile: side `s` lies between corner `s` and corner `s+1` (mod
 |---|---|
 | R-8.1 | The deck holds 25 cards (R-1.4), shuffled at game start with the game RNG. |
 | R-8.2 | **Buy:** in Main, pay 1 Fiber + 1 Grain + 1 Iron, take the top card into your hand (hidden from opponents; they only see your Charter count). Cannot buy if the deck is empty. Multiple buys per turn allowed. |
-| R-8.3 | **One play per turn:** a player may play at most **one** Charter per turn (Warden, Road Crew, Bounty or Decree). Monuments are never "played" and do not count toward this limit. |
+| R-8.3 | **One play per turn:** a player may play at most **one** Charter per turn (Warden, Road Crew, Bounty or Decree), at any point of their own turn: before rolling (TurnStart) or after (Main). Monuments are never "played" and do not count toward this limit. Charters can never be played during another player's turn, during setup, or while a Discard / MoveStorm / ChooseVictim / RoadCrew step or a trade offer is pending. |
 | R-8.4 | **Not the turn you bought it:** a Charter cannot be played during the same turn it was bought. (If you hold another, older copy of the same type you may play that one.) |
 | R-8.5 | **Warden:** may be played at TurnStart (before rolling) or in Main. Move the Storm per R-7.3 and plunder per R-7.4 (no discards). The card stays face up in front of the player (counts toward Strongest Guard). After resolution, return to the phase the card was played in (TurnStart → still must roll; Main → Main). |
 | R-8.6 | **Monument:** worth 1 VP, hidden from opponents until the game ends (or until revealed to win). It is never played. It counts toward the owner's total VP immediately, including the turn it was bought (a Monument bought this turn can win the game). |
-| R-8.7 | **Road Crew:** playable in Main only. The player places up to 2 Paths at no cost, following R-6.5 and R-6.2. Playable only if the player has ≥ 1 Path in supply and ≥ 1 legal edge. They must place the first Path; after placing one, if they have a Path in supply and a legal edge remains, they must place the second, otherwise the effect ends. While placing, no other action is allowed. |
-| R-8.8 | **Bounty:** playable in Main only. Choose any 2 resources (may be the same) and take them from the bank. Only resources in stock may be chosen; if the bank has only 1 card total available the player takes that one; if the bank is totally empty the card cannot be played. |
-| R-8.9 | **Decree:** playable in Main only. Name one resource; every opponent gives you all resource cards of that type they hold (possibly zero). |
+| R-8.7 | **Road Crew:** may be played at TurnStart or in Main. The player places up to 2 Paths at no cost, following R-6.5 and R-6.2. Playable only if the player has ≥ 1 Path in supply and ≥ 1 legal edge. They must place the first Path; after placing one, if they have a Path in supply and a legal edge remains (the first Path may have created new legal edges), they must place the second, otherwise the effect ends. While placing, no other action is allowed. Afterwards play returns to the phase the card was played in (TurnStart → still must roll). |
+| R-8.8 | **Bounty:** may be played at TurnStart or in Main. Choose any 2 resources (may be the same) and take them from the bank; they may be used immediately. Only resources in stock may be chosen; if the bank has only 1 card total available the player takes that one; if the bank is totally empty the card cannot be played. |
+| R-8.9 | **Decree:** may be played at TurnStart or in Main. Name one resource; every opponent gives you all resource cards of that type they hold (possibly zero). |
 | R-8.10 | Wardens, Road Crews, Bounties and Decrees, once played, are out of the game (Wardens remain displayed for counting). |
-| R-8.11 | Charters cannot be traded or stolen; Charters are not discarded on a 7. |
+| R-8.11 | Charters cannot be traded, given away or stolen; Charters are not discarded on a 7 and do not count toward the 7-card hand limit. |
+| R-8.12 | The deck is never reshuffled or refilled. When it is empty no more Charters can be bought. Unplayed Charters stay in hand until played or until the game ends. |
+| R-8.13 | A player may look at their own Charters at any time. Opponents see only how many unplayed Charters a player holds and how many Wardens they have played. |
 
 ## R-9 Domestic trade (between players)
 
@@ -165,6 +168,7 @@ Side index `s` of a tile: side `s` lies between corner `s` and corner `s+1` (mod
 | R-10.1 | In Main, the current player may give the bank N identical resource cards for 1 resource card of a **different** type, where N is: 2 if the player has a building on a 2:1 harbor corner of that resource; else 3 if on any Generic harbor corner; else 4. |
 | R-10.2 | The bank must have the requested card in stock. |
 | R-10.3 | Multiple maritime trades per turn are allowed; each action trades exactly one bundle. |
+| R-10.4 | A harbor's rate applies as soon as the player has a building on one of its corners, including later in the same turn it was built (subject to R-4.7 when Classic phases is on). |
 
 ## R-11 Awards
 
@@ -198,6 +202,8 @@ Side index `s` of a tile: side `s` lies between corner `s` and corner `s+1` (mod
 1. **7 rolled when nobody can be robbed:** discards still happen, Storm still must move, no plunder.
 2. **Storm moved to a tile where only the roller has buildings:** no plunder.
 3. **Warden at TurnStart then rolling a 7:** both resolve fully (Storm moves twice).
+3a. **Any Charter before the roll:** Road Crew, Bounty and Decree may also be played before rolling (R-4.2). A Road Crew that completes the Longest Path and reaches the victory target wins before the dice are rolled.
+3b. **Charter played before the roll, then another after:** not allowed — one per turn in total (R-8.3).
 4. **Warden while the Storm is the only legal move restriction (Friendly Storm):** apply R-7.7 fallback.
 5. **Discard with exactly 7 cards:** no discard. With 9 cards: discard 4.
 6. **Buying a Monument and reaching the target:** immediate win (R-8.6, R-12.2).

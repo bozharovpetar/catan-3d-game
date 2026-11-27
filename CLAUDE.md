@@ -2,6 +2,8 @@
 
 You are building **Hexhaven**, a complete, polished 3D hex-island trading/building strategy game in Unity 6 (URP), from the specification in `docs/`. The spec is deliberately exhaustive: **do not invent rules, simplify mechanics, or skip features**. If something is genuinely unspecified, choose the simplest option consistent with the rest of the spec, write it down in `docs/DECISIONS.md` (create it), and continue.
 
+**Starting on a new machine or resuming the build?** `NEXT-STEPS.md` is the step-by-step runbook: machine setup, then every milestone with commands and expected results. `docs/PROGRESS.md` (once it exists) records how far the build has got.
+
 ## 1. Read in this order (all of it, before writing code)
 1. `docs/00-OVERVIEW.md` — scope, glossary (use these exact terms), tech targets.
 2. `docs/01-RULES.md` — **the gameplay source of truth**.
@@ -10,6 +12,9 @@ You are building **Hexhaven**, a complete, polished 3D hex-island trading/buildi
 5. `docs/04-AI.md`, `docs/05-VISUALS.md`, `docs/06-UI.md`, `docs/07-AUDIO.md`, `docs/08-PERSISTENCE.md`.
 6. `docs/09-TESTING.md` — the test catalogue and verification layers.
 7. `docs/10-BUILD-ORDER.md` — milestones, gates, Definition of Done. **Follow it in order.**
+8. `docs/11-CHARTERS.md` — step-by-step build guide for the Charter (development card) system; implement it in M2 alongside the engine.
+9. `docs/12-RULES-AUDIT.md` — the completeness checklist against the classic genre rules (classic terms may appear only in the cross-reference tables of docs 11 and 12, never under `game/`).
+10. `docs/13-STRINGS.md` — every user-facing string, verbatim.
 
 ## 2. Non-negotiable rules
 1. **Originality.** Never use the name, terminology, card names, art or trade dress of any existing commercial board game. Use only the glossary terms (Outpost, Keep, Path, Storm, Charter, Warden, Monument, Road Crew, Bounty, Decree, Longest Path, Strongest Guard, Timber/Clay/Fiber/Grain/Iron …). Gate: `grep -rniwE "catan|settlers?|robber|knights?|lumber|wool|ore|brick|sheep|monopoly|year of plenty|road building|largest army|longest road|development cards?" game/Assets/Hexhaven` must print nothing.

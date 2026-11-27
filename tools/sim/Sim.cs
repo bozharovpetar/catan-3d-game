@@ -137,6 +137,7 @@ static class Sim
         var c = new GameConfig { Seed = seed };
         c.BoardMode = (BoardMode)(gameIndex % 3);
         c.FriendlyStorm = cfgRng.NextInt(10) == 0;
+        c.ClassicPhases = cfgRng.NextInt(10) == 1;
         int t = cfgRng.NextInt(20);
         c.VictoryTarget = t == 0 ? 8 : t == 1 ? 12 : 10;
         string[] names = { "A", "B", "C", "D" };
@@ -162,7 +163,7 @@ static class Sim
     {
         var st = new Stats();
         var cfg = MakeConfig(0, seed, Mixes[0], new Pcg32(1));
-        cfg.VictoryTarget = 10; cfg.FriendlyStorm = false;
+        cfg.VictoryTarget = 10; cfg.FriendlyStorm = false; cfg.ClassicPhases = false;
         RunAiGame(cfg, Mixes[0], 0, st, verbose);
         return Report(st);
     }
@@ -340,6 +341,7 @@ static class Sim
             foreach (var p in cfg.Players) p.IsBot = true;
             cfg.BoardMode = (BoardMode)(g % 3);
             cfg.FriendlyStorm = g % 7 == 0;
+            cfg.ClassicPhases = g % 5 == 0;
             var engine = GameEngine.NewGame(cfg);
             engine.TakeInitialEvents();
             int steps = 0;
@@ -416,7 +418,13 @@ static class Sim
             case Phase.SetupPath: foreach (int x in e.LegalSetupPaths()) list.Add(GameAction.PlaceSetupPath(seat, x)); break;
             case Phase.TurnStart:
                 list.Add(GameAction.RollDice(seat));
-                if (rng.NextInt(5) == 0) list.Add(GameAction.PlayWarden(seat));
+                if (rng.NextInt(4) == 0)
+                {   // any Charter may be played before the roll (R-4.2)
+                    list.Add(GameAction.PlayWarden(seat));
+                    list.Add(GameAction.PlayRoadCrew(seat));
+                    list.Add(GameAction.PlayBounty(seat, ResourceBag.Single((Resource)rng.NextInt(5), 1) + ResourceBag.Single((Resource)rng.NextInt(5), 1)));
+                    list.Add(GameAction.PlayDecree(seat, (Resource)rng.NextInt(5)));
+                }
                 break;
             case Phase.Discard: list.Add(GameAction.Discard(seat, RandomSubBag(me.Hand, me.PendingDiscard, rng))); break;
             case Phase.MoveStorm: foreach (int t in e.LegalStormTiles(seat)) list.Add(GameAction.MoveStorm(seat, t)); break;

@@ -33,7 +33,8 @@ namespace Hexhaven.Core
             sb.Append("flow=").Append(s.StormReturnPhase).Append(',').Append(s.CharterPlayedThisTurn ? '1' : '0').Append(',')
               .Append(s.RoadCrewRemaining.ToString(ci)).Append(',').Append(s.SetupIndex.ToString(ci)).Append(',')
               .Append(s.LastSetupOutpost.ToString(ci)).Append(',').Append(s.NextTradeId.ToString(ci)).Append(',')
-              .Append(s.PlayedOtherCharters.ToString(ci)).Append(" rolloff=");
+              .Append(s.PlayedOtherCharters.ToString(ci)).Append(',').Append(s.RoadCrewReturnPhase).Append(',')
+              .Append(s.TradingClosedThisTurn ? '1' : '0').Append(" rolloff=");
             for (int i = 0; i < s.RollOffQueue.Count; i++) { if (i > 0) sb.Append(';'); sb.Append(s.RollOffQueue[i].ToString(ci)); }
             sb.Append('\n');
             sb.Append("bank=").Append(s.Bank.ToCodec()).Append('\n');

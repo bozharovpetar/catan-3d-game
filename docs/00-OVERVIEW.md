@@ -4,7 +4,7 @@
 
 **Hexhaven** is a complete, polished, single-machine 3D strategy board game for 3–4 players (any mix of humans in hot-seat and CPU opponents at three difficulty levels), built in Unity. Players settle a hex-tiled island, harvest resources when dice roll their numbers, trade, build Paths/Outposts/Keeps, buy Charter cards, fight over the Storm, and race to 10 Victory Points.
 
-It belongs to the "hex resource-trading" genre and implements the genre's full classic mechanics with **no rule simplifications**. It is an **original game**: its own name, terminology, art direction, colours, layout and UI. Never use the name, terminology, card names, art, logos or trade dress of any existing commercial board game anywhere in code, assets, strings or docs.
+It belongs to the "hex resource-trading" genre and implements the genre's full classic mechanics with **no rule simplifications**. It is an **original game**: its own name, terminology, art direction, colours, layout and UI. Never use the name, terminology, card names, art, logos or trade dress of any existing commercial board game anywhere in code, assets or in-game strings. (The only exceptions are the cross-reference tables in `docs/11-CHARTERS.md` and `docs/12-RULES-AUDIT.md`, which exist to prove rules completeness; nothing under `game/` may contain those terms.)
 
 ## 2. Pillars
 
@@ -19,7 +19,7 @@ It belongs to the "hex resource-trading" genre and implements the genre's full c
 ### In scope (all required for "done")
 - 3 or 4 players; each seat Human / CPU-Easy / CPU-Normal / CPU-Hard.
 - Board modes: **Balanced Random** (default), **Random**, **Beginner** (fixed layout).
-- Full rules: setup roll-off, snake setup, production with bank shortage, 7 → discard (chosen) → Storm → steal (chosen victim), building with piece limits, 25 Charter cards (5 types) with all play restrictions, domestic trading with offers/counter-offers/multiple partners, maritime trading 4:1 / 3:1 / 2:1, Longest Path and Strongest Guard awards with all tie/break rules, hidden Monument VP, configurable victory target, optional Friendly Storm variant.
+- Full rules: setup roll-off, snake setup, production with bank shortage, 7 → discard (chosen) → Storm → steal (chosen victim), building with piece limits, 25 Charter cards (5 types) with all play restrictions, domestic trading with offers/counter-offers/multiple partners, maritime trading 4:1 / 3:1 / 2:1, Longest Path and Strongest Guard awards with all tie/break rules, hidden Monument VP, configurable victory target, optional Friendly Storm and Classic phases (trade-then-build) variants.
 - Hot-seat privacy (pass-the-device curtain) when 2+ humans.
 - Save/Load: autosave every action + 3 manual slots; Continue from title.
 - Settings (audio, bot speed, camera, UI scale, colour-blind emblems, display).
@@ -88,3 +88,6 @@ Online/LAN multiplayer, expansions (5–6 players, seafaring, etc.), mobile/touc
 | `08-PERSISTENCE.md` | Save file format, autosave, settings storage. |
 | `09-TESTING.md` | Test catalogue, simulation harness, invariants, PlayMode smoke, screenshot review, perf checks. |
 | `10-BUILD-ORDER.md` | Milestones with verification gates and the final Definition of Done. |
+| `11-CHARTERS.md` | Complete build guide for the Charter (development card) system: engine pseudocode, UI flows, AI, tests. |
+| `12-RULES-AUDIT.md` | Audit of every classic base-game mechanic against the R-ids, with intentional deviations. |
+| `13-STRINGS.md` | Every user-facing string: errors, prompts, tooltips, toasts, the in-game rules reference. |
