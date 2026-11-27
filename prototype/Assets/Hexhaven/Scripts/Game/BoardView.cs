@@ -108,7 +108,7 @@ namespace Hexhaven
 
             switch (t.Terrain)
             {
-                case Terrain.Forest:
+                case HexTerrain.Forest:
                     foreach (var p in Scatter(rng, 6, 0.38f, 0.72f))
                     {
                         float s = 0.8f + (float)rng.NextDouble() * 0.5f;
@@ -116,7 +116,7 @@ namespace Hexhaven
                         Part("Tree", root, MeshFactory.Pyramid(6, 0.13f, 0.38f), new Color(0.13f, 0.38f, 0.20f), p + Vector3.up * (TileTop + 0.08f * s), Quaternion.Euler(0, rng.Next(60), 0), Vector3.one * s);
                     }
                     break;
-                case Terrain.ClayPit:
+                case HexTerrain.ClayPit:
                     foreach (var p in Scatter(rng, 3, 0.42f, 0.66f))
                     {
                         Part("Pit", root, MeshFactory.Prism(7, 0.16f, 0.02f), new Color(0.55f, 0.28f, 0.18f), p + Vector3.up * TileTop);
@@ -125,10 +125,10 @@ namespace Hexhaven
                                 p + new Vector3(0.12f, TileTop + 0.05f * i, 0.04f), Quaternion.Euler(0, 20 * i + rng.Next(30), 0), Vector3.one);
                     }
                     break;
-                case Terrain.FlaxField:
-                case Terrain.Farmland:
+                case HexTerrain.FlaxField:
+                case HexTerrain.Farmland:
                     {
-                        bool flax = t.Terrain == Terrain.FlaxField;
+                        bool flax = t.Terrain == HexTerrain.FlaxField;
                         Color crop = flax ? new Color(0.42f, 0.58f, 0.95f) : new Color(0.85f, 0.62f, 0.18f);
                         Color stem = flax ? new Color(0.38f, 0.60f, 0.32f) : new Color(0.80f, 0.66f, 0.30f);
                         float rot = rng.Next(3) * 60f;
@@ -146,7 +146,7 @@ namespace Hexhaven
                         }
                     }
                     break;
-                case Terrain.Mine:
+                case HexTerrain.Mine:
                     {
                         var peaks = Scatter(rng, 3, 0.45f, 0.62f);
                         for (int i = 0; i < peaks.Count; i++)
@@ -159,7 +159,7 @@ namespace Hexhaven
                         Part("MineEntrance", root, MeshFactory.Box(0.12f, 0.1f, 0.06f), new Color(0.15f, 0.12f, 0.10f), m + Vector3.up * TileTop, Quaternion.LookRotation(-m), Vector3.one);
                     }
                     break;
-                case Terrain.Ruins:
+                case HexTerrain.Ruins:
                     foreach (var p in Scatter(rng, 5, 0.3f, 0.7f))
                     {
                         float h = 0.08f + (float)rng.NextDouble() * 0.3f;

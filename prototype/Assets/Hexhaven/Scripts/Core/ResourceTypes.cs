@@ -4,7 +4,7 @@ namespace Hexhaven.Core
 {
     public enum Resource { Timber = 0, Clay = 1, Fiber = 2, Grain = 3, Iron = 4 }
 
-    public enum Terrain { Forest, ClayPit, FlaxField, Farmland, Mine, Ruins }
+    public enum HexTerrain { Forest, ClayPit, FlaxField, Farmland, Mine, Ruins }
 
     public enum Building { None, Outpost, Keep }
 
@@ -14,15 +14,15 @@ namespace Hexhaven.Core
         public static readonly string[] Names = { "Timber", "Clay", "Fiber", "Grain", "Iron" };
 
         /// <summary>Resource produced by a terrain, or -1 for none.</summary>
-        public static int FromTerrain(Terrain t)
+        public static int FromTerrain(HexTerrain t)
         {
             switch (t)
             {
-                case Terrain.Forest: return (int)Resource.Timber;
-                case Terrain.ClayPit: return (int)Resource.Clay;
-                case Terrain.FlaxField: return (int)Resource.Fiber;
-                case Terrain.Farmland: return (int)Resource.Grain;
-                case Terrain.Mine: return (int)Resource.Iron;
+                case HexTerrain.Forest: return (int)Resource.Timber;
+                case HexTerrain.ClayPit: return (int)Resource.Clay;
+                case HexTerrain.FlaxField: return (int)Resource.Fiber;
+                case HexTerrain.Farmland: return (int)Resource.Grain;
+                case HexTerrain.Mine: return (int)Resource.Iron;
                 default: return -1;
             }
         }

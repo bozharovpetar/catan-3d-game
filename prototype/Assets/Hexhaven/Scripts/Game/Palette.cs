@@ -26,25 +26,25 @@ namespace Hexhaven
             new Color(0.58f, 0.60f, 0.66f),  // Iron
         };
 
-        public static Color TerrainColor(Terrain t)
+        public static Color TerrainColor(HexTerrain t)
         {
             switch (t)
             {
-                case Terrain.Forest: return new Color(0.26f, 0.52f, 0.30f);
-                case Terrain.ClayPit: return new Color(0.80f, 0.47f, 0.30f);
-                case Terrain.FlaxField: return new Color(0.60f, 0.76f, 0.50f);
-                case Terrain.Farmland: return new Color(0.93f, 0.80f, 0.42f);
-                case Terrain.Mine: return new Color(0.52f, 0.53f, 0.58f);
+                case HexTerrain.Forest: return new Color(0.26f, 0.52f, 0.30f);
+                case HexTerrain.ClayPit: return new Color(0.80f, 0.47f, 0.30f);
+                case HexTerrain.FlaxField: return new Color(0.60f, 0.76f, 0.50f);
+                case HexTerrain.Farmland: return new Color(0.93f, 0.80f, 0.42f);
+                case HexTerrain.Mine: return new Color(0.52f, 0.53f, 0.58f);
                 default: return new Color(0.86f, 0.79f, 0.62f);
             }
         }
 
-        public static string TerrainName(Terrain t)
+        public static string TerrainName(HexTerrain t)
         {
             switch (t)
             {
-                case Terrain.ClayPit: return "Clay Pit";
-                case Terrain.FlaxField: return "Flax Field";
+                case HexTerrain.ClayPit: return "Clay Pit";
+                case HexTerrain.FlaxField: return "Flax Field";
                 default: return t.ToString();
             }
         }

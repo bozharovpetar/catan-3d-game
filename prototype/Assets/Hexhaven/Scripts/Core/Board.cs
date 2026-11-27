@@ -7,7 +7,7 @@ namespace Hexhaven.Core
     {
         public int Id;
         public int Q, R;
-        public Terrain Terrain;
+        public HexTerrain Terrain;
         public int Number;          // 0 for Ruins
         public double X, Z;         // world-space centre (hex radius = 1)
         public int[] Corners = new int[6];  // vertex ids, corner i at angle 60*i - 30 degrees
@@ -56,14 +56,14 @@ namespace Hexhaven.Core
         public readonly List<HarborInfo> Harbors = new List<HarborInfo>();
 
         static readonly int[] NumberPool = { 2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12 };
-        static readonly Terrain[] TerrainPool =
+        static readonly HexTerrain[] TerrainPool =
         {
-            Terrain.Forest, Terrain.Forest, Terrain.Forest, Terrain.Forest,
-            Terrain.ClayPit, Terrain.ClayPit, Terrain.ClayPit,
-            Terrain.FlaxField, Terrain.FlaxField, Terrain.FlaxField, Terrain.FlaxField,
-            Terrain.Farmland, Terrain.Farmland, Terrain.Farmland, Terrain.Farmland,
-            Terrain.Mine, Terrain.Mine, Terrain.Mine,
-            Terrain.Ruins
+            HexTerrain.Forest, HexTerrain.Forest, HexTerrain.Forest, HexTerrain.Forest,
+            HexTerrain.ClayPit, HexTerrain.ClayPit, HexTerrain.ClayPit,
+            HexTerrain.FlaxField, HexTerrain.FlaxField, HexTerrain.FlaxField, HexTerrain.FlaxField,
+            HexTerrain.Farmland, HexTerrain.Farmland, HexTerrain.Farmland, HexTerrain.Farmland,
+            HexTerrain.Mine, HexTerrain.Mine, HexTerrain.Mine,
+            HexTerrain.Ruins
         };
 
         public static void HexToWorld(int q, int r, out double x, out double z)
@@ -148,7 +148,7 @@ namespace Hexhaven.Core
 
         void AssignTerrainAndNumbers(Random rng)
         {
-            var terrains = (Terrain[])TerrainPool.Clone();
+            var terrains = (HexTerrain[])TerrainPool.Clone();
             Shuffle(terrains, rng);
             for (int i = 0; i < Tiles.Count; i++) Tiles[i].Terrain = terrains[i];
 
@@ -157,7 +157,7 @@ namespace Hexhaven.Core
             {
                 Shuffle(numbers, rng);
                 int k = 0;
-                foreach (var t in Tiles) t.Number = t.Terrain == Terrain.Ruins ? 0 : numbers[k++];
+                foreach (var t in Tiles) t.Number = t.Terrain == HexTerrain.Ruins ? 0 : numbers[k++];
                 if (HotNumbersSeparated()) break;
             }
         }
@@ -208,7 +208,7 @@ namespace Hexhaven.Core
 
         public int RuinsTile()
         {
-            foreach (var t in Tiles) if (t.Terrain == Terrain.Ruins) return t.Id;
+            foreach (var t in Tiles) if (t.Terrain == HexTerrain.Ruins) return t.Id;
             return 0;
         }
 
